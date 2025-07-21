@@ -1,5 +1,6 @@
 tennis‑poc
 
+
 A fully–containerised pipeline for frame extraction and object detection on tennis‑match videos.The provided Docker image ships with PyTorch 2.1, Detectron2 ≥ 0.6, FFmpeg and every package in requirements.txt, so nothing needs to be installed on the host beyond Docker (and NVIDIA drivers if you want GPU acceleration).
 
 Quick start
@@ -9,13 +10,16 @@ Quick start
 # GPU‑enabled image (default)
 docker build -t tennis-poc .
 
+
 # CPU‑only variant
 # docker build --build-arg TORCH_IMAGE=pytorch/pytorch:2.1.0-cpu-py3.12 -t tennis-poc .
 
 2  Extract frames inside the container
 
+
 docker run --rm -v "$(pwd)":/app -it tennis-poc \
     python extract_frames.py input.mp4 frames/ --fps 10
+
 
 This command writes numbered JPEG files to frames/.
 
@@ -46,25 +50,15 @@ Component
 
 Version / Source
 
-PyTorch
+PyTorch 2.1.0
 
-2.1.0
+CUDA / cuDNN 11.8 / 8 (runtime)
 
-CUDA / cuDNN
+Detectron2 ≥ 0.6 (wheel for CUDA 11.8 + Torch 2.1)
 
-11.8 / 8 (runtime)
+FFmpeg Latest Debian package
 
-Detectron2
-
-≥ 0.6 (wheel for CUDA 11.8 + Torch 2.1)
-
-FFmpeg
-
-Latest Debian package
-
-Python 3
-
-3.12 (from base image)
+Python 3 3.12 (from base image)
 
 Tips & Troubleshooting
 
