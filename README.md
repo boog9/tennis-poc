@@ -1,18 +1,17 @@
 # tennis-poc
 
-This repository contains a simple example of running object detection with YOLOX-S from [MMDetection](https://github.com/open-mmlab/mmdetection).
+This repository contains simple utilities for object detection and frame extraction.
 
 ## Usage
 
 1. Place `.jpg` images in the `frames` directory.
-2. Install dependencies (PyTorch, MMDetection and their prerequisites).
-3. Run `python yolox_detect.py`.
-4. Detection results are written line-by-line to `detections.jsonl`.
+2. Install dependencies (PyTorch and Detectron2).
+3. Run `python detect_objects.py frames/ detections.json`.
+4. Detection results are written line-by-line to `detections.json`.
 
 ## Frame Extraction
 
-Run `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a
-specific frame rate.
+Run `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a specific frame rate.
 
 Example:
 
