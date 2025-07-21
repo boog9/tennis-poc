@@ -1,46 +1,84 @@
-# tennis-poc
+tennis‑poc
 
-This repository contains a simple pipeline for running object detection on extracted video frames using Detectron2. It includes small CLI utilities for frame extraction.
 
-## Usage
+A fully–containerised pipeline for frame extraction and object detection on tennis‑match videos.The provided Docker image ships with PyTorch 2.1, Detectron2 ≥ 0.6, FFmpeg and every package in requirements.txt, so nothing needs to be installed on the host beyond Docker (and NVIDIA drivers if you want GPU acceleration).
 
-1. Place `.jpg` images in the `frames` directory.
-2. Install dependencies using the requirements file. Detectron2 must be
-   installed separately since it provides CUDA-specific wheels:
-   ```bash
-   pip install -r requirements.txt
-   pip install 'detectron2>=0.6' \
-       -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu118/torch2.1/index.html
-   ```
-3. Run `python detect_objects.py <frames_dir> <out.json>`.
-4. Detection results are written to the specified JSON file.
+Quick start
 
-## Frame Extraction
+1  Build the image
 
-Use `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a specific frame rate.
-
-```bash
-python extract_frames.py input.mp4 frames/ --fps 10
-```
-
-This writes numbered JPEGs to the `frames/` directory.
-
-## Docker Setup
-
-A `Dockerfile` is provided for running the pipeline in an isolated environment. The image uses a PyTorch base with optional CUDA support and installs FFmpeg and all packages from `requirements.txt`. Detectron2 is installed from its official wheel repository as part of the build.
-
-```bash
-# Build the image (GPU capable by default)
+# GPU‑enabled image (default)
 docker build -t tennis-poc .
 
-# Run with access to your frames and output directories
-docker run --gpus all -v $(pwd):/app -it tennis-poc bash
-```
 
-Inside the container you can run the detection scripts as usual:
+# CPU‑only variant
+# docker build --build-arg TORCH_IMAGE=pytorch/pytorch:2.1.0-cpu-py3.12 -t tennis-poc .
 
-```bash
-python detect_objects.py frames/ detections.json
-```
+2  Extract frames inside the container
 
-Set `--gpus all` only when an NVIDIA GPU is available. For CPU-only usage, omit the flag.
+
+docker run --rm -v "$(pwd)":/app -it tennis-poc \
+    python extract_frames.py input.mp4 frames/ --fps 10
+
+
+This command writes numbered JPEG files to frames/.
+
+3  Run object detection inside the container
+
+# With GPU
+docker run --rm --gpus all -v "$(pwd)":/app -it tennis-poc \
+    python detect_objects.py frames/ detections.json
+
+# CPU‑only hosts – just drop the --gpus flag
+
+The file detections.json will contain one JSON object per frame with bounding boxes, confidences and class labels.
+
+Directory layout
+
+├── Dockerfile               # Container definition
+├── README.md                # You are here
+├── requirements.txt         # Python deps (CUDA‑agnostic)
+├── extract_frames.py        # Frame extraction helper
+├── detect_objects.py        # Detectron2 inference script
+├── models/                  # (Optional) custom weights
+├── frames/                  # Output of extract_frames.py
+└── detections.json          # Sample detection output
+
+Image contents
+
+Component
+
+Version / Source
+
+PyTorch 2.1.0
+
+CUDA / cuDNN 11.8 / 8 (runtime)
+
+Detectron2 ≥ 0.6 (wheel for CUDA 11.8 + Torch 2.1)
+
+FFmpeg Latest Debian package
+
+Python 3 3.12 (from base image)
+
+Tips & Troubleshooting
+
+For larger datasets mount extra volumes, e.g. -v /data/videos:/videos.
+
+Override the working directory with -w if you need a different path.
+
+To add YOLOX via MMDetection, extend the Dockerfile – the base image already includes CUDA‑compatible PyTorch.
+If you encounter “CUDA driver not found” errors, check that the host driver ≥ the CUDA runtime version (11.8).
+
+Contributing
+
+Fork → feature branch → PR against main.
+
+Ensure pre‑commit run --all-files passes (Black, Flake8, isort).
+
+Add/adjust unit tests where appropriate.
+
+License
+
+Apache 2.0 – see LICENSE for details.
+
+Happy detecting & enjoy the rallies 🏸 (closest emoji to a tennis racquet!)
