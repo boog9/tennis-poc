@@ -1,8 +1,8 @@
-# tennis-poc
+tennis‑poc
 
 This repository contains a simple pipeline for running object detection on extracted video frames using Detectron2. It includes small CLI utilities for frame extraction.
 
-## Usage
+
 
 1. Place `.jpg` images in the `frames` directory.
 2. Install dependencies using the requirements file. Detectron2 must be
@@ -15,12 +15,31 @@ This repository contains a simple pipeline for running object detection on extra
 3. Run `python detect_objects.py <frames_dir> <out.json>`.
 4. Detection results are written to the specified JSON file.
 
-## Frame Extraction
 
-Use `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a specific frame rate.
+
+Quick start
+
+1  Build the image
+
+# GPU‑enabled image (default)
+docker build -t tennis-poc .
+
+
+# CPU‑only variant
+# docker build --build-arg TORCH_IMAGE=pytorch/pytorch:2.1.0-cpu-py3.12 -t tennis-poc .
+
+This writes numbered JPEGs to the `frames/` directory.
+
+## Docker Setup
+
+A `Dockerfile` is provided for running the pipeline in an isolated environment. The image uses a PyTorch base with optional CUDA support and installs FFmpeg and all packages from `requirements.txt`. Detectron2 is installed from its official wheel repository as part of the build.
 
 ```bash
-python extract_frames.py input.mp4 frames/ --fps 10
+# Build the image (GPU capable by default)
+docker build -t tennis-poc .
+
+# Run with access to your frames and output directories
+docker run --gpus all -v $(pwd):/app -it tennis-poc bash
 ```
 
 This writes numbered JPEGs to the `frames/` directory.
@@ -37,10 +56,5 @@ docker build -t tennis-poc .
 docker run --gpus all -v $(pwd):/app -it tennis-poc bash
 ```
 
-Inside the container you can run the detection scripts as usual:
 
-```bash
-python detect_objects.py frames/ detections.json
-```
 
-Set `--gpus all` only when an NVIDIA GPU is available. For CPU-only usage, omit the flag.
