@@ -1,27 +1,20 @@
-# tennis-poc
+tennis‑poc
 
-This repository contains a simple pipeline for running object detection on extracted video frames using Detectron2. It includes small CLI utilities for frame extraction.
 
-## Usage
 
-1. Place `.jpg` images in the `frames` directory.
-2. Install dependencies using the requirements file. Detectron2 must be
-   installed separately since it provides CUDA-specific wheels:
-   ```bash
-   pip install -r requirements.txt
-   pip install detectron2 \
-       -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu118/torch2.1/index.html
-   ```
-3. Run `python detect_objects.py <frames_dir> <out.json>`.
-4. Detection results are written to the specified JSON file.
+A fully–containerised pipeline for frame extraction and object detection on tennis‑match videos.The provided Docker image ships with PyTorch 2.1, Detectron2 ≥ 0.6, FFmpeg and every package in requirements.txt, so nothing needs to be installed on the host beyond Docker (and NVIDIA drivers if you want GPU acceleration).
 
-## Frame Extraction
 
-Use `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a specific frame rate.
+Quick start
 
-```bash
-python extract_frames.py input.mp4 frames/ --fps 10
-```
+1  Build the image
+
+# GPU‑enabled image (default)
+docker build -t tennis-poc .
+
+
+# CPU‑only variant
+# docker build --build-arg TORCH_IMAGE=pytorch/pytorch:2.1.0-cpu-py3.12 -t tennis-poc .
 
 This writes numbered JPEGs to the `frames/` directory.
 
