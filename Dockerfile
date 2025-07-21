@@ -26,8 +26,8 @@ RUN apt-get update && \
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install --no-cache-dir \
-       'detectron2>=0.6' \
-       -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu118/torch2.1/index.html
+        detectron2 \
+        -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu118/torch2.1/index.html
 
 COPY . /app
 
