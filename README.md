@@ -1,20 +1,6 @@
 # tennis-poc
 
-This repository contains a simple pipeline for running object detection on extracted video frames. The project uses either YOLOX (via MMDetection) or Detectron2 and includes small CLI utilities for frame extraction.
-
 ## Usage
-
-1. Place `.jpg` images in the `frames` directory.
-2. Install dependencies using the provided requirements file:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run `python yolox_detect.py` or `python detect_objects.py <frames_dir> <out.json>`.
-4. Detection results are written to `detections.jsonl` or the specified JSON file.
-
-## Frame Extraction
-
-Use `extract_frames.py` to pull JPEG frames from a video using FFmpeg at a specific frame rate.
 
 ```bash
 python extract_frames.py input.mp4 frames/ --fps 10
